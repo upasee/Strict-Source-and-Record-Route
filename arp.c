@@ -2,7 +2,7 @@
 #include "hw_addrs.h"
 
 
-//Checking for dummy commit - 1
+//Checking for dummy commit - trying to make both work
 void convert_mac_to_string(char mac[6])
 {
     int i =6;
