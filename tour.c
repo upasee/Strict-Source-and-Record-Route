@@ -87,7 +87,7 @@ void create_ip_list(struct ip_list *ipl, int argc, char **argv) {
 	
 	ipl->curr_ip_pos = 0;
 	strcpy(ipl->multicast_addr, MULTICAST_ADDR); 
-	ipl->multicast_port = MULTICAST_PORT;
+	strcpy(ipl->multicast_port, MULTICAST_PORT);
 }
 
 void print_ip_list(struct ip_list *ipl) {
@@ -127,7 +127,7 @@ void main(int argc, char **argv) {
 	send_tour_packet(rt_sockfd);
 
 	/* UDP Socket */
-	send_mcast_sockfd = Udp_client(MULTICAST_ADDR, MULTICAST_PORT, (void **)&sasend, &salen);
+	send_mcast_sockfd = Udp_client(MULTICAST_ADDR, MULTICAST_PORT, &sasend, &salen);
 	recv_mcast_sockfd = Socket(sasend->sa_family, SOCK_DGRAM, 0);
 	Setsockopt(recv_mcast_sockfd, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(on));
 

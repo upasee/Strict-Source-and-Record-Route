@@ -4,7 +4,7 @@
 #include <linux/if_ether.h>
 
 #define RT_PROTOCOL 15526
-#define MULTICAST_PORT 8000
+#define MULTICAST_PORT "8000"
 #define MULTICAST_ADDR "225.0.0.1"
 
 struct ip_list {
@@ -12,7 +12,7 @@ struct ip_list {
 	int total_ips;
 	int curr_ip_pos;
 	char multicast_addr[30];
-	int multicast_port;
+	char multicast_port[5];
 };
 
 char my_vm[5];
