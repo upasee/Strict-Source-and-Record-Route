@@ -2,8 +2,9 @@
 #include "unp.h"
 #include <netinet/in.h>
 #include <linux/if_ether.h>
+#include <linux/ip.h>
 
-#define RT_PROTOCOL 15526
+#define RT_PROTOCOL 155
 #define MULTICAST_PORT "8000"
 #define MULTICAST_ADDR "225.0.0.1"
 
