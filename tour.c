@@ -517,8 +517,8 @@ void recv_multicast_message(int sendfd, int recvfd, SA *sasend, socklen_t salen)
     char msg[MAXLINE];
     snprintf(msg, sizeof(msg), "<<<<<Node %s. I am a member of the group>>>>>", my_vm);
     
-
-    send_multicast_message(sendfd, sasend, salen, msg);
+    if(strstr(line, "Tour has ended") != NULL)
+        send_multicast_message(sendfd, sasend, salen, msg);
 
 }
 
