@@ -5,6 +5,7 @@
 #include <netinet/if_ether.h>
 #include <linux/if_packet.h>
 #include <netinet/ip_icmp.h>
+#include "hw_addrs.h"
 
 #define RT_PROTOCOL 155
 #define MULTICAST_PORT "8000"
@@ -12,6 +13,7 @@
 #define ID 328
 #define IP4_HDRLEN 20
 #define ICMP_HDRLEN 8
+#define DATALENGTH 56
 
 struct ip_list {
 	char ip_addr[30][15];
@@ -22,3 +24,9 @@ struct ip_list {
 };
 
 char my_vm[5];
+
+struct node_list{
+    char ip[15];
+    int seq;
+    struct node_list *next;
+};

@@ -19,8 +19,8 @@ get_hw_addrs.o: get_hw_addrs.c
 prhwaddrs.o: prhwaddrs.c
 	${CC} ${CFLAGS} -c prhwaddrs.c
 
-tour: tour.o
-	${CC} ${FLAGS} -o tour tour.o ${LIBS}
+tour: tour.o get_hw_addrs.o prhwaddrs.o
+	${CC} ${FLAGS} -o tour tour.o get_hw_addrs.o prhwaddrs.o ${LIBS}
 tour.o: tour.c
 	${CC} ${CFLAGS} -c tour.c 
 
