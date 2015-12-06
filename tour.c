@@ -396,11 +396,14 @@ void send_icmp_echo_request(int sockfd, char *ip, int seq){
 }
 
 
-void ping(int pf_sockfd){
+void ping(int pf_sockfd, int last_node){
     struct node_list *node = head;
     while(node != NULL){
         //        int vm_no = get_vm_num(ipl->ip_addr[ipl->curr_ip_pos - 1]);
-        if (node->seq < 5){
+//        if (node->seq < 5){
+        if (node->seq >= 5 && last_node == 1)
+            return;
+        else{
             int vm_no = get_vm_num(node->ip);
             //        printf("PING vm%d %s : %d data bytes\n", vm_no, ipl->ip_addr[ipl->curr_ip_pos - 1], DATALENGTH);
 //            printf("seq no is %d\n", node->seq);
@@ -597,7 +600,7 @@ void main(int argc, char **argv) {
             Bind(recv_mcast_sockfd, sarecv, salen);
 
             Mcast_join(recv_mcast_sockfd, sasend, salen, NULL, 0);
-            Mcast_set_loop(send_mcast_sockfd, 0);
+//            Mcast_set_loop(send_mcast_sockfd, 0);
 
             send_tour_packet(rt_sockfd, &ipl);
             start_flag = 0;
@@ -645,7 +648,7 @@ void main(int argc, char **argv) {
                         Bind(recv_mcast_sockfd, sarecv, salen);
 
                         Mcast_join(recv_mcast_sockfd, sasend, salen, NULL, 0);
-                        Mcast_set_loop(send_mcast_sockfd, 0);
+//                        Mcast_set_loop(send_mcast_sockfd, 0);
                         start_flag = 0;
                     }
 
@@ -713,7 +716,7 @@ void main(int argc, char **argv) {
                 recv_multicast_message(send_mcast_sockfd, recv_mcast_sockfd, sasend, salen);
             }
             if (ret == 0 && stop_ping_flag == 0)
-                ping(pf_sockfd);
+                ping(pf_sockfd, last_node);
 
         }
     }
