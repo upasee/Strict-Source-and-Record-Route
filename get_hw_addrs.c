@@ -8,26 +8,40 @@ void get_hw_ip_pair(struct hw_ip_pair *hi_pair) {
 	struct hwa_info	*hwa, *hwahead;
 	struct sockaddr	*sa;
 	char   *ptr;
-	int    i, prflag;
+	int    i=0, j=0, prflag;
 
 	printf("\n");
 
 	for (hwahead = hwa = Get_hw_addrs(); hwa != NULL; hwa = hwa->hwa_next) {
 
 		if(strcmp(hwa->if_name, "eth0") == 0) {
-			printf("Eth0 found \n");
-			hi_pair->ip_addr = malloc(sizeof(struct sockaddr));
-			memcpy(hi_pair->ip_addr, hwa->ip_addr, sizeof(struct sockaddr));
-			strcpy(hi_pair->if_haddr, hwa->if_haddr);
-/*
-			if ( (sa = hi_pair->ip_addr) != NULL) {
-				printf("IP addr = %s\n", Sock_ntop_host(sa, sizeof(*sa)));
+
+			hi_pair->if_index = hwa->if_index;
+
+			sa = hwa->ip_addr;
+            strcpy(hi_pair->ip_addr, Sock_ntop_host(sa, sizeof(*sa)));
+
+			do {
+				if (hwa->if_haddr[i] != '\0') {
+					prflag = 1;
+					break;
+				}
+			} while (++i < IF_HADDR);
+
+			if(prflag == 1) {           
+
+				ptr = hwa->if_haddr;
+				i = IF_HADDR;
+				do {
+					hi_pair->hw_addr[j++] = (*ptr++ & 0xff);
+				} while (--i > 0);
+				printf("\n");
 			}
-*/		}
+
+		}
 	}		
 
 	free_hwa_info(hwahead);
-	exit(0);
 }
 
 struct hwa_info *

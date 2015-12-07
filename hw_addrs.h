@@ -8,7 +8,8 @@
 #define	IF_NAME		16	/* same as IFNAMSIZ    in <net/if.h> */
 #define	IF_HADDR	 6	/* same as IFHWADDRLEN in <net/if.h> */
 
-#define	IP_ALIAS  	 1	/* hwa_addr is an alias */
+#define	IP_ALIAS  	 	1	/* hwa_addr is an alias */
+#define PF_PACK_PROTO 	15526
 
 struct hwa_info {
 	char    if_name[IF_NAME];	/* interface name, null terminated */
@@ -20,9 +21,9 @@ struct hwa_info {
 };
 
 struct hw_ip_pair {
-	char if_haddr[IF_HADDR];
-	struct sockaddr *ip_addr;
-	struct hw_ip_pair *hi_next;
+	char hw_addr[6];
+	char ip_addr[30];
+	int if_index;
 };
 
 struct hw_ip_pair *hi_head;

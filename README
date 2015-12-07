@@ -1,0 +1,86 @@
+README:
+
+Group Members:
+Nargis Nigar    (109889328)
+Upasi Mehta    
+
+User Documentation:
+==================
+
+Deploy:
+-------
+To deploy the application run the following command on minix:
+    ./deploy_app tour_nnigar arp_nnigar
+
+Execution:
+----------
+To execute the tour module on source node run the following command:
+    ./tour_nnigar <list of vms>
+
+To execute the tour module on the other nodes, run the following command:
+    ./tour_nnigar
+
+To execute the arp module on any node, run the following command:
+    ./arp_nnigar
+
+
+Design Documentation:
+====================
+
+tour.h and arp.h:
+-----------------
+- are the header files which include the headers included and the data structures defined.
+
+tour.c
+------
+- The tour module takes the list of vms as command line arguments.
+- It converts the list of vms into a list of ip addresses into a structure.
+- We create two IP raw sockets, one for rt(route traversal) and the other for pg(ping).
+- We also create a PF_PACKET socket which will be used to send the echo_request_messages.
+- We create Unix domain socket to interact with the ARP module.
+- The rt packet is created with the list of ip addresses as the payload.
+- The node designates itself as the source ip and the next node in the tour as the destination ip in the IP packet sent.
+- The source node also adds to the list a multicast address and group.
+- The source node joins the multicast group at the address and port number using Mcast_join() function.
+- For the first time a node is visited, it joins the munlticast group at the address and port number using Mcast_join().
+- We set the identification ID for the IP packet on the rt socket.
+- Each time a node receives an IP packet on the rt socket, it checks for the identification field.
+- The tour application at a node updates itself as the current node in the IP packet payload before forwarding it.
+- A node also initiates pinging it's preceding node in the tour on the pg socket using the ping() function which calls send_icmp_echo_request() function to send ICMP request.
+- In send_icmp_echo_request() the node sends out an arp request to it's module for the HW address of the destination node.
+- The nodes receive the ICMP_ECHO and ICMP_ECHOREPLY on the pg socket.
+- To make sure that is this node and the preceding node have been previously visited in the same order, we maintain a list of node to ping and ping those node on a timeout of 1 second on select.
+- We use the select() function to wait on pg socket, rt_socket and mcast_recv_socket to receive multicast messages.
+- After the last node has received 5 ICMP_ECHOREPLY from preceding node, it stops pinging and sends out the multicast message on the mcast_send_socket.
+- When each node receives the multicast message, it stops pinging. we do this by setting the stop_pinging_flag which is checked before pinging.
+- On receiving the munlticast message from the destination, the nodes set a alarm of 5 seconds.
+- In the signal handler for SIGALRM, we exit the tour application gracefully.
+
+arp.c
+-----
+- It runs on every node
+- A node’s interfaces and set of <IP address, HW address> matching pairs for all eth0 interface IP addresses is built and printed
+- Two Sockets: PF_PACKET and UNIX DOMAIN socket are created
+- The client/Tour sends a message with to ARP (function areq) with the IP address of the VM
+- ARP first checks its cache for the <HW, IP> pair, if available, it forms the hwaddr structure and returns it to areq else:
+- ARP creates a request packet and broadcasts it to all the VMs. The destination VM creates an ARP reply packet and sends it to the source VM
+
+Caching in ARP:
+
+- Insertion: 
+    Whenever ARP broadcasts request from one VM, the source VM's details are added to the Cache list of destination VM
+    Whenever ARP broadcasts request from one VM, the destination VM's incomplete entry is added to source VM's cache list
+
+- Updation:
+    Whenever ARP brodcasts request from one VM, the node which is not destination node, will update the cache entry of the source VM if it is already present in its cache list
+    Whenever ARP sends the reply on the Unix domain Socket, the incomplete cache entry is filled
+
+- Deletion: Whenever ARP tries to send reply to a closed connection socket, it deletes the entry from the cache list
+
+- Lookup: ARP first checks its cache for the <HW, IP> pair, if available, it forms the hwaddr structure and returns it to areq
+
+All the statements are printed as required.
+
+ 
+
+
